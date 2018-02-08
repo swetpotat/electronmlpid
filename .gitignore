@@ -1,0 +1,6 @@
+*.root
+*.pdf
+*.py~
+data/
+plots/
+__pycache__/
