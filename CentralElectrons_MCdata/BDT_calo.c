@@ -61,26 +61,36 @@ int BDT_calo( TString myMethodList = "" ){
    // --------------------------------------------------------------------------------------------------
 
    // Read training data
-   TString fname_training = "./data/MC_SigBkgElectrons_2000000ev.root";
-   if (gSystem->AccessPathName( fname_training ))  
+   TString fname_training_sig = "./data/MC_SigElectrons_2000000ev.root";
+   if (gSystem->AccessPathName( fname_training_sig ))  
       std::cout << "FILE DOES NOT EXIST" << std::endl;
-   TFile *input_training = TFile::Open( fname_training );
-   std::cout << "--- BDTClassification       : Using input training file: " << input_training->GetName() << std::endl;
+   TString fname_training_bkg = "./data/MC_BkgElectrons_2000000ev.root";
+   if (gSystem->AccessPathName( fname_training_bkg ))  
+      std::cout << "FILE DOES NOT EXIST" << std::endl;
+   TFile *input_training_sig = TFile::Open( fname_training_sig );
+   TFile *input_training_bkg = TFile::Open( fname_training_bkg );
+   std::cout << "--- BDTClassification       : Using input signal training file: " << input_training_sig->GetName() << std::endl;
+   std::cout << "                            : Using input background training file: " << input_training_bkg->GetName() << std::endl;
 
    // Register the training trees
-   TTree *signalTree_training     = (TTree*)input_training->Get("data");
-   TTree *background_training     = (TTree*)input_training->Get("data");
+   TTree *signalTree_training     = (TTree*)input_training_sig->Get("data");
+   TTree *background_training     = (TTree*)input_training_bkg->Get("data");
 
    // Read test data
-   TString fname_testing = "./data/MC_SigBkgElectrons_500000ev.root";
-   if (gSystem->AccessPathName( fname_testing ))
+   TString fname_testing_sig = "./data/MC_SigElectrons_500000ev.root";
+   if (gSystem->AccessPathName( fname_testing_sig ))
    	  std::cout << "FILE DOES NOT EXIST" << std::endl;
-   TFile *input_testing = TFile::Open( fname_testing );
-   std::cout << "--- BDTClassificaion        : Using input testing file: " << input_testing->GetName() << std::endl;
+   TString fname_testing_bkg = "./data/MC_BkgElectrons_500000ev.root";
+   if (gSystem->AccessPathName( fname_testing_bkg ))
+   	  std::cout << "FILE DOES NOT EXIST" << std::endl;
+   TFile *input_testing_sig = TFile::Open( fname_testing_sig );
+   TFile *input_testing_bkg = TFile::Open( fname_testing_bkg );
+   std::cout << "--- BDTClassificaion        : Using input signal testing file: " << input_testing_sig->GetName() << std::endl;
+   std::cout << "                            : Using input background testing file: " << input_testing_bkg->GetName() << std::endl;
 
    // Register the testing trees
-   TTree *signalTree_testing      = (TTree*)input_testing->Get("data");
-   TTree *background_testing      = (TTree*)input_testing->Get("data");
+   TTree *signalTree_testing      = (TTree*)input_testing_sig->Get("data");
+   TTree *background_testing      = (TTree*)input_testing_bkg->Get("data");
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
    TString outfileName( "BDT_calo_results.root" );
@@ -131,7 +141,7 @@ int BDT_calo( TString myMethodList = "" ){
    TCut mycutb = ""; 
 
    // Tell the dataloader how to use the training and testing events
-   dataloader->PrepareTrainingAndTestTree( mycuts, mycutb, "nTrain_Signal=1000000:nTrain_Background=1000000:nTest_Signal=250000:nTest_Background=250000:SplitMode=Random:!V");
+   dataloader->PrepareTrainingAndTestTree( mycuts, mycutb, "nTrain_Signal=76:nTrain_Background=1849844:nTest_Signal=18:nTest_Background=461937:SplitMode=Random:!V");
   
    // Book the MVA method
    // Boosted Decision Trees
