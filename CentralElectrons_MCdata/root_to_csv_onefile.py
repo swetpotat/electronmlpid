@@ -120,8 +120,8 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 			#print eta_temp , et_temp
 
 		if (filetype==0):
-			if (p_TruthType == 2 and label0 == 1) : Truth = 1
-			else : Truth = 0
+			if (Truth==2): Truth = 1
+			if (Truth!=2): Truth = 0
 			helper = [      intree.p_Rhad1 ,
 							intree.p_Rhad ,
 							intree.p_f3 ,
@@ -175,8 +175,8 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 							intree.p_TruthType,
 							Truth ]
 		if (filetype==1):
-			if (p_TruthType == 2 and label0 == 1) : Truth = 1
-			else : Truth = 0
+			if (Truth==2): Truth = 1
+			if (Truth!=2): Truth = 0
 			helper = [      intree.p_Rhad1 ,
 							intree.p_Rhad ,
 							intree.p_f3 ,
@@ -236,11 +236,11 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 							Truth]
 		
 	if (ientry<10):
-		print(len(helper))
-		print(helper)
+		print len(helper)
+		print helper
 	vec.append(helper)
 	if ( ientry%nentries_1percent == 0) :
-		print('\rCompleted %5.0f. Parsed entries: %7.0f.' % (100*(ientry+1)/nentries , ientry ))
+		print '\rCompleted %5.0f. Parsed entries: %7.0f.' % (100*(ientry+1)/nentries , ientry )
 	infilesig.Close()
 
 	#BKG
@@ -276,8 +276,8 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 		# 	print eta_bin,et_bin
 
 		if (filetype==0):
-			if (p_TruthType == 2 and label0 == 1) : Truth = 1
-			else : Truth = 0
+			if (Truth==2): Truth = 1
+			if (Truth!=2): Truth = 0
 			helper = [      intree.p_Rhad1 ,
 							intree.p_Rhad ,
 							intree.p_f3 ,
@@ -330,8 +330,8 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 							intree.p_TruthType,
 							Truth ]
 		if (filetype==1):
-			if (p_TruthType == 2 and label0 == 1) : Truth = 1
-			else : Truth = 0
+			if (Truth==2): Truth = 1
+			if (Truth!=2): Truth = 0
 			helper = [      intree.p_Rhad1 ,
 							intree.p_Rhad ,
 							intree.p_f3 ,
@@ -390,12 +390,12 @@ def makeVector( vec , labeltype_sig, labeltype_bkg , infilesig , infilebkg , wei
 							intree.p_TruthType,
 							Truth ]
 		if (ientry<10):
-			print(len(helper))
-			print(helper)
+			print len(helper)
+			print helper
 
 		vec.append(helper)
 		if ( ientry%nentries_1percent == 0) :
-			print('\rCompleted %5.0f. Parsed entries: %7.0f.' % (100*(ientry+1)/nentries , ientry ))
+			print '\rCompleted %5.0f. Parsed entries: %7.0f.' % (100*(ientry+1)/nentries , ientry )
 	infilebkg.Close()
 
 
@@ -418,7 +418,7 @@ Bkg_Files = [   "/hep/nperez/storage/MC/Split_2M_A_Background_mix.root_w_LH_mm_m
 				#"/hep/nperez/storage/Data/Split_5M_B_EGAM7.root_w_LH_mm_mmf_md_mdf_dd_ddf" ,
 				#"/hep/nperez/storage/Data/Split_5M_A_EGAM7.root_w_LH_mm_mmf_md_mdf_dd_ddf" ]
 
-print(len(Sig_Files))
+print len(Sig_Files)
 
 csv_file_name = [ "MC2_" , "MC05_" , "Data5A_" ]
 #csv_file_name = [ "Data18_" , "Data5A_" , "Data5B_" ]
@@ -442,10 +442,10 @@ infile_bkg = TFile(Bkg_Files[ifile], "READ")
 vec = makeVector( vec , 1 , 0 , infile_sig , infile_bkg , weight_conf[ifile] , type_data[ifile] ,filetype[ifile])
 
 string = csv_file_name[ifile] + ".csv"
-print(string)
+print string
 numpy.savetxt(str("/hep/nperez/storage/CSV/"+string), vec, delimiter="," )
 
-print(len(name))
+print len(name)
 
 #Reads the numpy txt with pandas
 df_train  = pd.read_csv("/hep/nperez/storage/CSV/" + csv_file_name[ifile] +".csv" , names = name ) #, names = name
