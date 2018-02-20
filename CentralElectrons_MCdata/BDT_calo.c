@@ -22,13 +22,6 @@ int BDT_calo( TString myMethodList = "" ){
 
    // Default MVA methods to be trained + tested
    std::map<std::string,int> Use;
-
-   // Cut optimisation - kept as the default values
-   Use["Cuts"]            = 1;
-   Use["CutsD"]           = 1;
-   Use["CutsPCA"]         = 0;
-   Use["CutsGA"]          = 0;
-   Use["CutsSA"]          = 0;
    
    // Boosted Decision Trees - only Adaptive Boost was used
    Use["BDT"]             = 1; // uses Adaptive Boost
@@ -118,8 +111,6 @@ int BDT_calo( TString myMethodList = "" ){
    dataloader->AddVariable( "p_Reta", "Reta", "units", 'F' );
    dataloader->AddVariable( "p_Eratio", "Eratio", "units", 'F' );
    dataloader->AddVariable( "p_f1", "f1", "units", 'F' );
-   dataloader->AddVariable( "p_eta", "eta", "units", 'F' );
-   dataloader->AddVariable( "averageInteractionsPerCrossing", "averageInteractionsPerCrossing", "units", 'F' );
 
    // Global event weights per tree
    Double_t signalWeight     = 1.0;
@@ -141,7 +132,7 @@ int BDT_calo( TString myMethodList = "" ){
    TCut mycutb = ""; 
 
    // Tell the dataloader how to use the training and testing events
-   dataloader->PrepareTrainingAndTestTree( mycuts, mycutb, "nTrain_Signal=76:nTrain_Background=1849844:nTest_Signal=18:nTest_Background=461937:SplitMode=Random:!V");
+   dataloader->PrepareTrainingAndTestTree( mycuts, mycutb, "nTrain_Signal=848338:nTrain_Background=1875593:nTest_Signal=212567:nTest_Background=468199:SplitMode=Random:!V");
   
    // Book the MVA method
    // Boosted Decision Trees
