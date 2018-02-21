@@ -89,7 +89,7 @@ int MLP_iso( TString myMethodList = "" ){
    TTree *background_testing      = (TTree*)input_testing_bkg->Get("data");
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "MLP_BATCH_BP_iso_results.root" );
+   TString outfileName( "MLP_BFGS_BP_iso_results.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods
@@ -142,7 +142,7 @@ int MLP_iso( TString myMethodList = "" ){
    // Book the MVA method
    // TMVA ANN: MLP (recommended ANN) -- all ANNs in TMVA are Multilayer Perceptrons
    if (Use["MLP"])
-      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:LearningMethod=Batch:!UseRegulator" );
+      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:LearningMethod=BFGS:!UseRegulator" );
 
  
    // --------------------------------------------------------------------------------------------------
