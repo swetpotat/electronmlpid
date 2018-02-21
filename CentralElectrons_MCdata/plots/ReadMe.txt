@@ -13,8 +13,6 @@ produced when originally running the script: TMVA::TMVAGui("myfile.root");
 - General naming scheme: MLP_LEARNINGMETHOD_TRAININGMETHOD_track/calo/iso.root
 
 MLP_STOCH_BP_*.root ====> learning method = stochastic, training method = backpropogation
-MLP_STOCH_BFGS_*.root ====> learning method = stochastic, training method = BFGS
-
 
 
 #################################################################################################
@@ -25,3 +23,8 @@ MLP_STOCH_BFGS_*.root ====> learning method = stochastic, training method = BFGS
 - General naming scheme: BDT_LEARNINGMETHOD_TRAININGMETHOD_track/calo/iso.root
 
 BDT_AD_GI_*.root ====> learning method = adaptive boost, training method = GiniIndex 
+BDT_BAG_GI_*.root ====> learning method = bagging, training method = GiniIndex
+BDT_GR_GI_*.root ====> learning method = gradient boost, training method = GiniIndex
+BDT_AD_CR_*.root ====> learning method = adaptive boost, training method = CrossEntropy
+BDT_BAG_CR_*.root ====> learning method = bagging, training method = CrossEntropy
+BDT_GR_CR_.*root ====> learning method = gradient boost, training method = CrossEntropy

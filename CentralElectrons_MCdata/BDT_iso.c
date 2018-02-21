@@ -86,7 +86,7 @@ int BDT_iso( TString myMethodList = "" ){
    TTree *background_testing      = (TTree*)input_testing_bkg->Get("data");
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "BDT_iso_results.root" );
+   TString outfileName( "BDT_AD_CR_iso_results.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods
@@ -138,23 +138,8 @@ int BDT_iso( TString myMethodList = "" ){
   
    // Book the MVA method
    // Boosted Decision Trees
-   if (Use["BDTG"]) // Gradient Boost
-      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTG","!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=20:MaxDepth=2" 	 );
-
    if (Use["BDT"])  // Adaptive Boost
-      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDT","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
-   );
-
-   if (Use["BDTB"]) // Bagging
-      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTB","!H:!V:NTrees=400:BoostType=Bagging:SeparationType=GiniIndex:nCuts=20" 
-   );
-
-   if (Use["BDTD"]) // Decorrelation + Adaptive Boost
-      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTD","!H:!V:NTrees=400:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:VarTransform=Decorrelate"
-   );
-
-  if (Use["BDTF"])  // Allow Using Fisher discriminant in node splitting for linearly correlated variables
-      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTF","!H:!V:NTrees=50:MinNodeSize=2.5%:UseFisherCuts:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=20"
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDT","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=CrossEntropy:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
    );
 
  
