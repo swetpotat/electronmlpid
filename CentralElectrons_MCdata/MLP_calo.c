@@ -33,6 +33,13 @@ int MLP_calo( TString myMethodList = "" ){
    Use["DNN_GPU"]         = 0; // CUDA-accelerated DNN training.
    Use["DNN_CPU"]         = 0; // Multi-core accelerated DNN.
 
+   Use["BDTAC"]               = 0; 
+   Use["BDTAGI"]              = 1; 
+   Use["BDTGRCR"]             = 0; 
+   Use["BDTGRGI"]             = 1;
+   Use["BDTBC"]               = 0; 
+   Use["BDTBGI"]              = 1; 
+
    // ---------------------------------------------------------------
    
    std::cout << std::endl;
@@ -89,7 +96,8 @@ int MLP_calo( TString myMethodList = "" ){
    TTree *background_testing      = (TTree*)input_testing_bkg->Get("data");
 
    // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-   TString outfileName( "MLP_BFGS_BP_calo_results.root" );
+   //TString outfileName( "MLP_STOCH_BFGS_calo_results.root" );
+   TString outfileName( "MLPBDT_calo_results.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
    // Create the factory object. Later you can choose the methods
@@ -140,7 +148,32 @@ int MLP_calo( TString myMethodList = "" ){
    // Book the MVA method
    // TMVA ANN: MLP (recommended ANN) -- all ANNs in TMVA are Multilayer Perceptrons
    if (Use["MLP"])
-      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:LearningMethod=BFGS:!UseRegulator" );
+      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:TrainingMethod=BFGS:!UseRegulator" );
+
+   if (Use["BDTAC"])  // Adaptive Boost - Cross Entropy
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTAC","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=CrossEntropy:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
+   if (Use["BDTAGI"])  // Adaptive Boost - GiniIndex
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTAGI","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=GiniIndex:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
+   if (Use["BDTGRCR"])  // Grad Boost - Cross Entropy
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTGRCR","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=CrossEntropy:BoostType=Grad:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
+   if (Use["BDTGRGI"])  // Grad Boost - Gini Index
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTGRGI","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=GiniIndex:BoostType=Grad:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
+   if (Use["BDTBC"])  // Bagging - Cross Entropy
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTGC","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=CrossEntropy:BoostType=Bagging:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
+   if (Use["BDTBGI"])  // Bagging - GiniIndex
+      factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTGGI","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=GiniIndex:BoostType=Bagging:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
+   );
+
 
  
    // --------------------------------------------------------------------------------------------------
