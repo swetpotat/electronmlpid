@@ -38,7 +38,7 @@ int MLP_track( TString myMethodList = "" ){
    Use["BDTGRCR"]             = 0; 
    Use["BDTGRGI"]             = 1;
    Use["BDTBC"]               = 0; 
-   Use["BDTBGI"]              = 1; 
+   Use["BDTBGI"]              = 0; 
 
    // ---------------------------------------------------------------
    
@@ -149,7 +149,7 @@ int MLP_track( TString myMethodList = "" ){
   
    // Book the MVA method
     if (Use["MLP"])
-      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:TrainingMethod=BFGS:!UseRegulator" );
+      factory->BookMethod( dataloader, TMVA::Types::kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" );
 
     if (Use["BDTAC"])  // Adaptive Boost - Cross Entropy
       factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTAC","!H:!V:NTrees=200:MinNodeSize=2.5%:MaxDepth=3:SeparationType=CrossEntropy:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20"
