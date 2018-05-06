@@ -1,2 +1,5 @@
 data/
 *.py~
+.root
+.pdf
+atlasml/
