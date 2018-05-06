@@ -1,0 +1,80 @@
+----------------------------------------------------------------------------------------------
+The following is information on the definition of each of the variables used in this analysis
+----------------------------------------------------------------------------------------------
+
+They are a mixture of signal (from Tag-and-Probe selection on Z->ee events) and background 
+(from W/Z-veto selection on jet-jet events). 
+
+The variables for each event are listed below, subdivided by category. Those with a "*" are 
+those which are NOT included in the likelihood PID (LH_Value).
+
+
+TRACKING VARIALBES:
+-------------------
+
+### Track Conditions ###
+
+p_numberOfInnermostPixelHits - number of hits in the innermost pixel layer; discriminates against photon conversions
+p_numberOfPixelHits - number of hits in the pixel detector
+p_numberOfSCTHits - number of total hits in the pixel and SCT detectors
+p_d0 - transverse impact parameter with respect to the beam line
+p_d0Sig - significance of transverse impact parameter defined as the ratio of d0 and its uncertainty
+p_dPOverP - momentum lost by the track between the perigee and the least measurement point divided by the original momentum
+
+### Track Cluster Matching ###
+
+p_deltaEta1 - deltaEta between the cluster position in the strip layer and the extrapolated track
+p_deltaPhiRescaled2 - defined as deltaPhi2 (deltaPhi between cluster position in the middle layer and the track extrapolated from the perigee) but
+       		      the track momentum is rescaled to the cluster energy
+p_EptRatio - ratio of the cluster energy to the track momentum
+p_TRTPID - ???
+p_numberOfTRTHits* - number of hits in the TRT detector in total
+p_TRTTrackOccupancy* - measure of the occupancy/activity in the direction of the electron candidate
+p_numberOfTRTXenonHits* - not all TRT hits are in straws with xenon, which is the gas used for electron PID
+
+
+CALORIMETER VARIABLES:
+----------------------
+
+### Hadronic Leakage ###
+
+p_Rhad1 - ratio of Et in the first layer of the hadronic calorimeter to Et of the EM cluster (used over the range abs(eta) < 0.8 or abs(eta) > 1.37)
+p_Rhad - ratio of Et in the hadronic calorimeter to Et of the EM cluster (used over the range 0.8 < abs(eta) < 1.37)
+
+### Back Layer of EM Calorimeter ###
+
+p_f3 - ratio of the energy in the back layer to the total energy in the EM accordion calorimeter (only used below 100 GeV because known to be
+       inefficient at high energies)
+
+### Middle Layer of EM Calorimeter ###
+
+p_weta2 - lateral shower width
+p_Rphi - ratio of energy in 3x3 cells over the energy in 3x7 cells centered at electron cluster position
+p_Reta - ratio of energy in 3x7 cells over the energy in 7x7 cells centered at electron cluster position
+
+### Strip Layer of EM Calorimeter ###
+
+p_Eratio - ratio of the energy difference between the largest and second largest energy deposits in the cluster over the sum of these energies
+p_f1 - ratio of the energy in the strip layer to the total energy in the EM accordion calorimeter
+p_eta* - kinematic variable giving the direction of the electron candidate
+
+### Pileup Information ###
+
+averageInteractionsPerCrossing* - provided by LHC (used instead of actualInteractionsPerCrossing since this variable had negative values)
+
+
+ISOLATION VARIABLES:
+---------------------
+
+etconeXX variables is the sum of all the energy from all other particles within a distance of deltaR < 0.XX
+
+p_etcone20
+p_etcone30
+p_etcone40
+p_etcone20Correction
+p_etcone30Correction
+p_etcone40Correction
+p_ptcone20
+p_ptcone30
+p_ptcone40
+p_ptPU30* - sum of pt inside cone of deltaR < 0.3 for pileup tracks
