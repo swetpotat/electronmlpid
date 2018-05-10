@@ -69,6 +69,7 @@ for i in range(bnentries):
 	bdata[i, 12] = btree.p_TRTTrackOccupancy
 	bdata[i, 13] = btree.p_numberOfTRTXenonHits
 
+
 # Parameters
 num_trees = 200
 num_steps = 100
@@ -83,11 +84,41 @@ Y = tf.placeholder(tf.int32, shape = [None])
 	
 # Random Forest Parameters
 params = tensor_forest.ForestHParams(num_classes = num_classes,
-									 num_features = num_features,
-									 max_depth = max_depth,
-									 num_trees = num_trees).fill()
+				     num_features = num_features,
+				     max_depth = max_depth,
+				     num_trees = num_trees).fill()
 
 # Build Random Forest
+forest_graph = tensor_forest.RandomForestGraphs(params)
+train_graph = tensor_forest.training_graph(X, Y)
+loss_graph = tensor_forest.training_loss(X, Y)
+
+
+# Measure the accuracy
+probs = tensor_forest.inference_graph(X)
+correct_prediction = tf.equal(tf.argmax(probs, 1), tf.cast(Y, tf.int64))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+# Initialise the variables and forest resources
+init_vars = tf.group(tf.global_variables_initializer(), tf.resources.initialize_resources(tf.resources.shared_resources))
+
+# Start TensorFlow session
+sess = tf.Session()
+
+sess.run(init_vars)
+
+# Training
+for i in range(1, num_steps + 1):
+	
+	batch_x, batch_y = tf.train.next_batch(batch_size)
+	_, l = sess.run([train_op, loss_op], feed_dict={X:batch_x, Y:batch_y})
+	if i % 50 == 0 or i == 1:
+		acc = sess.run(accuracy_op, feed_dict={X:batch_x, Y:batch_y})
+		print('Step %i, Loss: %f, Acc: %f' % (i, l, acc))
+	
+
+
+
 
 
 
