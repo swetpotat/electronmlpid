@@ -3,3 +3,6 @@ data/
 .root
 .pdf
 atlasml/
+root6/
+env/
+.ssh/
