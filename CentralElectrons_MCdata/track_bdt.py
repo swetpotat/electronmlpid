@@ -2,11 +2,8 @@ import numpy as np
 import pandas as pd
 
 from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.metric import accuracy_score, confusion_matrix
 
-
-# Read in data and weight files
-datafile = pd.read_csv('data/MC_data_2000000ev.csv')
-weightfile = pd.read_csv('data/weights.csv')
 
 # Define features used for training
 features = ['p_numberOfInnermostPixelHits',
@@ -21,30 +18,79 @@ features = ['p_numberOfInnermostPixelHits',
 	    'p_TRTPID']
 
 
-# Extract relevant data sample, target variables and weights
-data = datafile[features]
-temp_targets = datafile.Truth
-temp_weights = weightfile.weights
+def collect_train_data():
 
-# Define Random Forest variables
-n_estimators = 200
-max_depth = 4
-min_samples_split = 4
+	# Read in data and weight files
+	datafile_training = pd.read_csv('data/MC_data_2000000ev.csv')
+	weightfile = pd.read_csv('data/weights.csv')
 
-# Make Random Forest
-rf = RF(n_estimators, max_depth, min_samples_split)
+	# Extract relevant data sample, target variables and weights
+	training_data = datafile_training[features]
+	training_targets = datafile_training.Truth
+	weights = weightfile.weights
 
-print("Random Forest made. Now fitting...")
+	# Convert dataframes to numpy arrays
+	training_data = training_data.values
+	training_targets = training_targets.values
+	weights = weights.values
 
-data = data.values
-targets = []
-weights = []
+	return training_data, training_targets, weights
 
-for i in range(2723931):
-	targets.append(temp_targets[i])
-	weights.append(temp_weights[i])
 
-# Fit Random Forest
-rf.fit(data, targets, weights)
+def collect_test_data():
 
-print("Training finished. Test me!")
+	# Read in data
+	datafile_testing = pd.read_csv('data/MC_data_500000ev.csv')
+
+	# Extract relevant data sample and target variables
+	testing_data = datafile_testing[features]
+	testing_targets = datafile_testing.Truth
+	
+	# Convert dataframes to numpy arrays
+	testing_data = testing_data.values
+	testing_targets = testing_targets.values
+
+	return testing_data, testing_targets
+
+
+def train(training_data, training_targets, weights):
+	
+	# Make Random Forest
+	rf = RF(n_estimators = 200, max_depth = 4, min_samples_split = 4)
+
+	print("Random Forest made. Now training following model...")
+	print(rf)
+
+	# Fit Random Forest
+	rf.fit(training_data, training_targets, weights)
+	
+	return rf
+
+
+def test(rf, testing_data):
+	
+	print("Training finished. Test me!")
+	print("If you insist! Testing model...")
+
+	predictions = rf.predict(testing_data)
+
+	return predictions 
+
+
+def main():
+
+	training_data, training_targets, weights = collect_train_data()
+	rf = train(training_data, training_targets, weights)
+
+	testing_data, testing_targets = collect_test_data()
+	predictions = test(rf, testing_data)
+
+	print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
+	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
+	print("Confusion matrix: ")
+	print(confusion_matrix(testing_targets, predictions))	
+
+
+if __name__ ==" __main__":
+	main()
+
