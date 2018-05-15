@@ -4,7 +4,8 @@ from ROOT import *
 import sys, getopt
 import math
 import array
-import numpy
+import csv
+#import numpy
 
 gStyle.SetOptStat(1)
 
@@ -76,34 +77,41 @@ def main():
 
 	# Assign weights to each event
 	
-	bkg_weights = numpy.array([0])
-	sig_weights = numpy.array([0])	
+	bkg_weights = []
+	sig_weights = []
 
-	tfile = TFile('weights.root', 'recreate')
-	ttree = TTree('weights', 'weights')
+	#bkg_weights = numpy.array([0])
+	#sig_weights = numpy.array([0])	
 
-	ttree.Branch('sig_weights', sig_weights ,'sig_weights/D' )
-	ttree.Branch('bkg_weights', bkg_weights, 'bkg_weights/D')	
+	#tfile = TFile('weights.root', 'recreate')
+	#ttree = TTree('weights', 'weights')
+
+	#ttree.Branch('sig_weights', sig_weights ,'sig_weights/D' )
+	#ttree.Branch('bkg_weights', bkg_weights, 'bkg_weights/D')	
 
 	for i in range(len(sn_eta)):
-		sig_weights = numpy.append(sig_weights,mu_weights.GetBinContent(int(sn_mu[i]))*et_weights.GetBinContent(int(sn_et[i]))*eta_weights.GetBinContent(int(sn_eta[i])))
+		sig_weights.append(mu_weights.GetBinContent(int(sn_mu[i]))*et_weights.GetBinContent(int(sn_et[i]))*eta_weights.GetBinContent(int(sn_eta[i])))
 		if (i % 100000 == 0 and i != 0):
 			print(str(i) + " signal event weights assigned.....")
-		ttree.Fill()
+		#ttree.Fill()
 
 	for i in range(len(bn_eta)):
-		bkg_weights = numpy.append(bkg_weights,mu_weights.GetBinContent(int(bn_mu[i]))*et_weights.GetBinContent(int(bn_et[i]))*eta_weights.GetBinContent(int(bn_eta[i])))
+		bkg_weights.append(mu_weights.GetBinContent(int(bn_mu[i]))*et_weights.GetBinContent(int(bn_et[i]))*eta_weights.GetBinContent(int(bn_eta[i])))
 		if (i % 100000 == 0 and i != 0):
 			print(str(i) + " background event weights assigned.....")
-		ttree.Fill()
+		#ttree.Fill()
+
+	with open('weights.csv', 'w') as output:
+		writer = csv.writer(output, lineterminator = '\n')
+		for i in sig_weights:
+			writer.writerow([i])
+		for j in bkg_weights:
+			writer.writerow([j])
 
 
-	print("Signal: " + str(len(sn_eta)))
-	print("Background: " + str(len(bn_eta)))
-	print("Total number of events: " + str(bnentries + snentries))
+	#tfile.Write()
+	#tfile.Close()
 
-	tfile.Write()
-	tfile.Close()
 
 if __name__ == "__main__":
 	main()

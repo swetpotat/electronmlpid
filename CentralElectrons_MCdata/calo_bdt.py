@@ -6,33 +6,14 @@ from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve
 
 
 # Define features used for training
-features = ['p_numberOfInnermostPixelHits',
-	    'p_numberOfPixelHits',
-	    'p_numberOfSCTHits',
-	    'p_d0',
-	    'p_d0Sig',
-	    'p_dPOverP',
-	    'p_deltaEta1',
-	    'p_deltaPhiRescaled2',
-	    'p_EptRatio',
-	    'p_TRTPID',
-	    'p_Rhad1',
+features = ['p_Rhad1',
 	    'p_Rhad',
 	    'p_f3',
 	    'p_weta2',
-  	    'p_Rphi',
+	    'p_Rphi',
 	    'p_Reta',
 	    'p_Eratio',
-	    'p_f1',
-	    'p_etcone20',
-	    'p_etcone30',
-	    'p_etcone40',
-	    'p_etcone20ptCorrection',
-	    'p_etcone30ptCorrection',
-	    'p_etcone40ptCorrection',
-	    'p_ptcone20',
-	    'p_ptcone30',
-	    'p_ptcone40']
+	    'p_f1']
 
 
 def collect_train_data():
@@ -73,7 +54,7 @@ def collect_test_data():
 def train(training_data, training_targets, weights):
 	
 	# Make Random Forest
-	rf = RF(n_estimators = 200, max_depth = 4, min_samples_split = 4)
+	rf = RF(n_estimators = 200, max_depth = 8, min_samples_split = 4)
 
 	print("Random Forest made. Now training following model...")
 	print(rf)
@@ -106,7 +87,7 @@ def main():
 	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
 	print("Confusion matrix: ")
 	print(confusion_matrix(testing_targets, predictions))	
-
+	
 
 if __name__ == "__main__":
 	main()
