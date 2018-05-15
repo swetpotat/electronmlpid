@@ -71,9 +71,9 @@ etconeXX variables is the sum of all the energy from all other particles within 
 p_etcone20
 p_etcone30
 p_etcone40
-p_etcone20Correction
-p_etcone30Correction
-p_etcone40Correction
+p_etcone20ptCorrection
+p_etcone30ptCorrection
+p_etcone40ptCorrection
 p_ptcone20
 p_ptcone30
 p_ptcone40
