@@ -71,8 +71,7 @@ def train(training_data, training_targets, weights):
 
 def test(rf, testing_data):
 	
-	print("Training finished. Test me!")
-	print("If you insist! Testing model...")
+	print("Training finished. Testing model...")
 
 	predictions = rf.predict(testing_data)
 

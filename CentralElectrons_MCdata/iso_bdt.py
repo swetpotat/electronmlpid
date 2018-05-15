@@ -55,7 +55,7 @@ def collect_test_data():
 def train(training_data, training_targets, weights):
 	
 	# Make Random Forest
-	rf = RF(n_estimators = 200, max_depth = 8, min_samples_split = 4)
+	rf = RF(n_estimators = 200, max_depth = 4, min_samples_split = 4)
 
 	print("Random Forest made. Now training following model...")
 	print(rf)
@@ -68,12 +68,40 @@ def train(training_data, training_targets, weights):
 
 def test(rf, testing_data):
 	
-	print("Training finished. Test me!")
-	print("If you insist! Testing model...")
+	print("Training finished. Testing model...!")
 
 	predictions = rf.predict(testing_data)
 
 	return predictions 
+
+
+def plot_confusion_matrix(testing_targets, predictions):
+
+	cm = confusion_matrix(testing_targets, predictions)
+	df_cm = pd.DataFrame(cm, index = ['Signal', 'Background'], columns = ['Signal', 'Background'])
+	plt.figure(figsize = (8,5))
+	sn.heatmap(df_cm, annot = True, cmap = 'Blues', fmt = 'g')
+	plt.title('Confusion Matrix for Isolation Features')
+	plt.ylabel('Predicted Class')
+	plt.xlabel('Actual Class')
+	plt.savefig('cm_iso.png', bbox_inches = 'tight')
+
+
+def plot_roc_curve(testing_targets, predictions):
+	
+	fpr, tpr, _ = roc_curve(testing_targets, predictions)
+	roc_auc = auc(tpr, fpr)
+	plt.figure(figsize = (8,5))
+	plt.title('ROC for Isolation Features')
+	interp_range = range(0,1,0.05)
+	interp_values = plt.spline(tpr, fpr, interp_range)
+	plt.plot(tpr, fpr, 'b', interp_range, interp_values, label = 'AUC = %0.2f'% roc_auc)
+	plt.legend(loc = 'lower right')
+	plt.xlim([0, 1])
+	plt.ylim([0, 1])
+	plt.xlabel('Signal Efficiency')
+	plt.ylabel('Background Acceptance')
+	plt.savefig('roc_iso.png', bbox_inches = 'tight')
 
 
 def main():
@@ -86,8 +114,10 @@ def main():
 
 	print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
 	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
-	print("Confusion matrix: ")
-	print(confusion_matrix(testing_targets, predictions))	
+	
+	# Plot confusion matrix and ROC
+	plot_confusion_matrix(testing_targets, predictions)
+	plot_roc_curve(testing_targets, predictions)
 
 
 if __name__ == "__main__":
