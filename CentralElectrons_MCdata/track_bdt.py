@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sn
+from scipy.interpolate import spline
 
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.metrics import accuracy_score, confusion_matrix, auc, roc_curve
@@ -55,7 +56,7 @@ def collect_test_data():
 	return testing_data, testing_targets
 
 
-def train(training_data, training_targets, weights):
+def train(training_data, training_targets, weights, testing_data):
 	
 	# Make Random Forest
 	rf = RF(n_estimators = 200, max_depth = 4, min_samples_split = 4)
@@ -64,18 +65,19 @@ def train(training_data, training_targets, weights):
 	print(rf)
 
 	# Fit Random Forest
-	rf.fit(training_data, training_targets, weights)
+	pred = rf.fit(training_data, training_targets, weights).predict_proba(testing_data)[:,1]
 	
-	return rf
+	return rf, pred
 
 
 def test(rf, testing_data):
 	
 	print("Training finished. Testing model...")
 
-	predictions = rf.predict(testing_data)
+	prob_predictions = rf.predict_proba(testing_data)
+	#predictions = rf.predict(testing_data)
 
-	return predictions 
+	return prob_predictions
 
 
 def plot_confusion_matrix(testing_targets, predictions):
@@ -87,41 +89,44 @@ def plot_confusion_matrix(testing_targets, predictions):
 	plt.title('Confusion Matrix for Track Features')
 	plt.ylabel('Predicted Class')
 	plt.xlabel('Actual Class')
-	plt.savefig('cm_track.png', bbox_inches = 'tight')
+	plt.savefig('cm_track.pdf', bbox_inches = 'tight')
 
 
-def plot_roc_curve(testing_targets, predictions):
+def plot_roc_curve(testing_targets, probabilities):
 	
-	fpr, tpr, _ = roc_curve(testing_targets, predictions)
-	roc_auc = auc(tpr, fpr)
+	#fpr, tpr, _ = roc_curve(testing_targets, probabilities)
+	#roc_auc = auc(tpr, fpr)
+	#interp_range = np.linspace(0,1,100)
+	#interp_values = spline(tpr, fpr, interp_range)
+	fpr, tpr, thresholds = roc_curve(testing_targets, probabilities, pos_label = 1)
 	plt.figure(figsize = (8,5))
-	plt.title('ROC for Track Features')
-	interp_range = range(0,1,0.05)
-	interp_values = plt.spline(tpr, fpr, interp_range)
-	plt.plot(tpr, fpr, 'b', interp_range, interp_values, label = 'AUC = %0.2f'% roc_auc)
-	plt.legend(loc = 'lower right')
+	plt.plot(fpr, tpr)
+	#plt.plot(interp_range, interp_values, 'b', label = 'AUC = %0.2f'% roc_auc)
+	#plt.title('ROC for Track Features')
+	#plt.legend(loc = 'lower right')
+	print("Here")
 	plt.xlim([0, 1])
 	plt.ylim([0, 1])
 	plt.xlabel('Signal Efficiency')
 	plt.ylabel('Background Acceptance')
-	plt.savefig('roc_track.png', bbox_inches = 'tight')
+	plt.savefig('roc_track.pdf', bbox_inches = 'tight')
 			
 
 
 def main():
 
 	training_data, training_targets, weights = collect_train_data()
-	rf = train(training_data, training_targets, weights)
-
 	testing_data, testing_targets = collect_test_data()
-	predictions = test(rf, testing_data)
+	rf, pred = train(training_data, training_targets, weights, testing_data)
 
-	print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
-	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
+	#prob_predictions = test(rf, testing_data)
+
+	#print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
+	#print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
 
 	# Plot confusion matrix and ROC
-	plot_confusion_matrix(testing_targets, predictions)
-	plot_roc_curve(testing_targets, predictions)
+	#plot_confusion_matrix(testing_targets, predictions)
+	plot_roc_curve(testing_targets, pred)
 
 if __name__ == "__main__":
 	main()
