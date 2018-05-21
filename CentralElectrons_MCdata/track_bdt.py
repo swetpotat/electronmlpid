@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sn
 from scipy.interpolate import spline
@@ -91,7 +93,9 @@ def plot_confusion_matrix(testing_targets, predictions):
 	plt.xlabel('Actual Class')
 	plt.savefig('cm_track.pdf', bbox_inches = 'tight')
 
-	return cm
+	print("Signal purity: " + str(cm[1,1]/(cm[1,1]+cm[1,0])))
+	print("Background purity: " + str(cm[0,0]/(cm[0,0]+cm[0,1])))
+
 
 
 def plot_roc_curve(testing_targets, probabilities):
@@ -99,7 +103,7 @@ def plot_roc_curve(testing_targets, probabilities):
 	fpr, tpr, thresholds = roc_curve(testing_targets, probabilities, pos_label = 1)
 	area = roc_auc_score(testing_targets, probabilities)
 	plt.figure(figsize = (8,5))
-	plt.plot(fpr, tpr, 'b', label = 'AUC = %0.2f'% area)
+	plt.plot(fpr, tpr, 'b', label = 'AUC = %0.5f'% area)
 	plt.title('ROC for Track Features')
 	plt.legend(loc = 'lower right')
 	plt.xlim([0, 1])
@@ -107,7 +111,9 @@ def plot_roc_curve(testing_targets, probabilities):
 	plt.xlabel('Signal Efficiency')
 	plt.ylabel('Background Acceptance')
 	plt.savefig('roc_track.pdf', bbox_inches = 'tight')
-			
+		
+	print('ROC AUC = %0.5f'% area)
+	
 	return fpr, tpr
 
 
@@ -120,15 +126,12 @@ def main():
 	probabilities, predictions = test(rf, testing_data)
 
 	# Plot confusion matrix and ROC
-	cm = plot_confusion_matrix(testing_targets, predictions)
+	plot_confusion_matrix(testing_targets, predictions)
 	fpr, tpr = plot_roc_curve(testing_targets, probabilities)
 	
 	print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
 	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
-	print("")
-	print("Signal purity: " + str(cm[1,1]/(cm[1,1]+cm[1,0])))
-	print("Background purity: " + str(cm[0,0]/(cm[0,0]+cm[0,1])))
-
+	
 
 if __name__ == "__main__":
 	main()
