@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -9,6 +10,7 @@ from scipy.interpolate import spline
 from sklearn.ensemble import RandomForestClassifier as RF
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, roc_auc_score
 
+start = time.time()
 
 # Define features used for training
 features = ['p_etcone20',
@@ -19,7 +21,8 @@ features = ['p_etcone20',
 	    'p_etcone40ptCorrection',
 	    'p_ptcone20',
 	    'p_ptcone30',
-	    'p_ptcone40']
+	    'p_ptcone40',
+	    'p_ptPU30']
 
 
 def collect_train_data():
@@ -60,7 +63,7 @@ def collect_test_data():
 def train(training_data, training_targets, weights):
 	
 	# Make Random Forest
-	rf = RF(n_estimators = 200, max_depth = 4, min_samples_split = 4)
+	rf = RF(n_estimators = 100, max_depth = 4, min_samples_split = 4)
 
 	print("Random Forest made. Now training following model...")
 	print(rf)
@@ -72,8 +75,6 @@ def train(training_data, training_targets, weights):
 
 
 def test(rf, testing_data):
-	
-	print("Training finished. Testing model...!")
 
 	probabilities = rf.predict_proba(testing_data)[:,1]
 	predictions = rf.predict(testing_data)
@@ -101,7 +102,7 @@ def plot_roc_curve(testing_targets, probabilities):
 	fpr, tpr, thresholds = roc_curve(testing_targets, probabilities, pos_label = 1)
 	area = roc_auc_score(testing_targets, probabilities)
 	plt.figure(figsize = (8,5))
-	plt.plot(fpr, tpr, 'b', label = 'AUC = %0.5f'% area)
+	plt.plot(fpr, tpr, 'b', label = 'AUC = %0.3f'% area)
 	plt.title('ROC for Isolation Features')
 	plt.legend(loc = 'lower right')
 	plt.xlim([0, 1])
@@ -110,9 +111,17 @@ def plot_roc_curve(testing_targets, probabilities):
 	plt.ylabel('Background Acceptance')
 	plt.savefig('roc_iso.pdf', bbox_inches = 'tight')
 		
-	print('ROC AUC = %0.5f'% area)
-	
-	return fpr, tpr
+	print("")
+	print('ROC AUC = %0.3f'% area)
+
+	# Determine thresholds
+	fpr = np.asarray(fpr)
+	index1 = (np.abs(fpr-0.92)).argmin()
+	print("Background acceptance at 92% signal efficiency = " + str(fpr[index1]))
+	index2 = (np.abs(fpr-0.95)).argmin()
+	print("Background acceptance at 95% signal efficiency = " + str(fpr[index2]))
+	index3 = (np.abs(fpr-0.98)).argmin()
+	print("Background acceptance at 98% signal efficiency = " + str(fpr[index3]))		
 
 
 def main():
@@ -123,12 +132,29 @@ def main():
 	rf = train(training_data, training_targets, weights)
 	predictions, probabilities = test(rf, testing_data)
 
-	# Plot confusion matrix and ROC
-	plot_confusion_matrix(testing_targets, predictions)
-	fpr, tpr = plot_roc_curve(testing_targets, probabilities)
-	
+	print("")
 	print("Training accuracy: " + str(accuracy_score(training_targets, rf.predict(training_data))))
 	print("Testing accuracy: " + str(accuracy_score(testing_targets, predictions)))
+
+	# Plot confusion matrix and ROC
+	plot_confusion_matrix(testing_targets, predictions)
+	plot_roc_curve(testing_targets, probabilities)
+
+	# Produce feature rankins
+	importances = rf.feature_importances_
+	std = np.std([tree.feature_importances_ for tree in rf.estimators_], axis = 0)
+	indices = np.argsort(importances)[::-1]
+	print("")
+	print("Feature ranking: ")
+	for f in range(training_data.shape[1]):
+		print("%d. %s (%f)" % (f+1, features[indices[f]], importances[indices[f]]))
+
+	end = time.time()
+	print("")
+	print("Running time: " + str(end-start) + " seconds")
+	print("")
+	print("")
+	print("")
 
 
 if __name__ == "__main__":
